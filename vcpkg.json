@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "gl",
-    "glew"
+    "sfml"
   ]
 }

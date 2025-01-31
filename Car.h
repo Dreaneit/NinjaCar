@@ -1,19 +1,61 @@
 #include <cmath>
+#include <SFML/Graphics.hpp>
 
 class Car
 {
     float _positionX = 0.0f, _positionY = 0.0f;
     float _speed = 0.0f;
     float _angle = 0.0f;
+    float _deltaTime = 0.0f;
     const float Acceleration = 0.1f;
     const float Deceleration = 0.005f;
     const float MaxSpeed = 0.1f;
     const float TurnSpeed = 2.0f;
-    const float DegreesToRadians = 3.14159 / 180.0;
+    const double DegreesToRadians = 3.14159 / 180.0;
+    sf::Texture _texture;
+    sf::Sprite _sprite;
+    sf::Keyboard::Key _pressedKey = sf::Keyboard::Key::Unknown;
 
 public:
     Car() {};
-    Car(float x, float y) : _positionX(x), _positionY(y) {};
+    Car(float x, float y) : _positionX(x), _positionY(y) 
+    {
+        if (!_texture.loadFromFile("MainCar.png"))
+        {
+            throw std::runtime_error("Cannot load MainCar.png");
+        }
+
+        _sprite.setTexture(_texture);
+        _sprite.setOrigin(_texture.getSize().x / 2.0f, _texture.getSize().y / 2.0f);
+        _sprite.setPosition(400, 300);
+    };
+
+    void update()
+    {
+        switch (_pressedKey)
+        {
+            case sf::Keyboard::Up:
+                accelerate();
+                break;
+            case sf::Keyboard::Down:
+                brake();
+                break;
+            case sf::Keyboard::Left:
+                turnLeft();
+                break;
+            case sf::Keyboard::Right:
+                turnRight();
+                break;
+        }
+
+        updatePosition();
+        updateSpritePosition();
+    }
+    
+    void draw(sf::RenderWindow& window)
+    {
+        window.draw(_sprite);
+    }
 
     void updatePosition()
     {
@@ -21,11 +63,17 @@ public:
         _positionY += _speed * std::sin(_angle * DegreesToRadians);
     }
 
+    void updateSpritePosition()
+    {
+        _sprite.setPosition(_positionX, _positionY);
+        _sprite.setRotation(_angle);
+    }
+
     void accelerate()
     {
         if (_speed < MaxSpeed)
         {
-            _speed += Acceleration;
+            _speed += Acceleration * _deltaTime;
         }
     }
 
@@ -33,18 +81,28 @@ public:
     {
         if (_speed > 0.0f)
         {
-            _speed -= Deceleration;
+            _speed -= Deceleration * _deltaTime;
         }
     }
 
     void turnLeft()
     {
-        _angle += TurnSpeed;
+        _angle += TurnSpeed * _deltaTime;
     }
 
     void turnRight()
     {
-        _angle -= TurnSpeed;
+        _angle -= TurnSpeed * _deltaTime;
+    }
+
+    void setPressedKey(sf::Keyboard::Key pressedKey)
+    {
+        _pressedKey = pressedKey;
+    }
+
+    void setDeltaTime(float deltaTime)
+    {
+        _deltaTime = deltaTime;
     }
 
     float getPositionX() const { return _positionX; }
