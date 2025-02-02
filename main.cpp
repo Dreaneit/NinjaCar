@@ -3,9 +3,17 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Car Ninja Game");
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    sf::VideoMode windowSize = sf::VideoMode(2400, 1200);
+    sf::VideoMode finalDesktop = windowSize;
 
-    Car car(400, 300);
+    sf::RenderWindow window(finalDesktop, "Car Ninja Game");
+
+    float centerWidthPosition = finalDesktop.width / 2.0f;
+    float centerHeightPosition = finalDesktop.height / 2.0f;
+
+    Car car(centerWidthPosition, centerHeightPosition);
+    car.setTextureSize(window.getSize());
 
     sf::Clock clock;
     while (window.isOpen())

@@ -18,7 +18,7 @@ class Car
 
 public:
     Car() {};
-    Car(float x, float y) : _positionX(x), _positionY(y) 
+    Car(float x, float y) : _positionX(x), _positionY(y)
     {
         if (!_texture.loadFromFile("MainCar.png"))
         {
@@ -26,8 +26,11 @@ public:
         }
 
         _sprite.setTexture(_texture);
-        _sprite.setOrigin(_texture.getSize().x / 2.0f, _texture.getSize().y / 2.0f);
-        _sprite.setPosition(400, 300);
+        int xPosition = _texture.getSize().x / 2.0f;
+        int yPosition = _texture.getSize().y / 2.0f;
+
+        _sprite.setOrigin(xPosition, yPosition);
+        _sprite.setPosition(_positionX, _positionY);
     };
 
     void update()
@@ -103,6 +106,13 @@ public:
     void setDeltaTime(float deltaTime)
     {
         _deltaTime = deltaTime;
+    }
+
+    void setTextureSize(const sf::Vector2u& windowSize)
+    {
+        sf::Vector2u textureSize = _texture.getSize();
+        float scale = std::min((windowSize.x * 0.1f) / textureSize.x, (windowSize.y * 0.1f) / textureSize.y);
+        _sprite.setScale(scale, scale);
     }
 
     float getPositionX() const { return _positionX; }
